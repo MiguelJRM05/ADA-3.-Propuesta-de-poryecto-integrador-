@@ -1,0 +1,25 @@
+CREATE DATABASE IF NOT EXISTS tecnofix CHARACTER SET utf8mb4;
+USE tecnofix;
+CREATE TABLE IF NOT EXISTS producto (
+ clave VARCHAR(32) PRIMARY KEY, nombre VARCHAR(120) NOT NULL,
+ precio DECIMAL(12,2) NOT NULL CHECK(precio > 0), stock INT NOT NULL DEFAULT 0 CHECK(stock >= 0)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS venta (
+ folio BIGINT PRIMARY KEY AUTO_INCREMENT, fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ INDEX(fecha)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS detalle (
+ folio BIGINT NOT NULL, clave VARCHAR(32) NOT NULL, nombre VARCHAR(120) NOT NULL,
+ precio DECIMAL(12,2) NOT NULL, cantidad INT NOT NULL CHECK(cantidad > 0),
+ PRIMARY KEY(folio,clave), FOREIGN KEY(folio) REFERENCES venta(folio), FOREIGN KEY(clave) REFERENCES producto(clave)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS entrada (
+ id BIGINT PRIMARY KEY AUTO_INCREMENT, clave VARCHAR(32) NOT NULL, cantidad INT NOT NULL CHECK(cantidad > 0),
+ fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(clave) REFERENCES producto(clave)
+) ENGINE=InnoDB;
+INSERT INTO producto (clave,nombre,precio,stock) VALUES
+ ('RAM16','Memoria RAM DDR4 de 16 GB',599.00,8),
+ ('SSD1T','SSD NVMe de 1 TB',1199.90,5),
+ ('GPU08','Tarjeta gráfica de 8 GB',4599.00,2),
+ ('GAB01','Gabinete de media torre',849.00,4)
+ON DUPLICATE KEY UPDATE clave=producto.clave;
