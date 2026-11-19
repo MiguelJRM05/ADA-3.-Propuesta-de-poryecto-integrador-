@@ -91,6 +91,9 @@ final class Tienda {
         });
     }
     String ticket(long folio) throws SQLException {
+        if (folio <= 0) {
+            throw new IllegalArgumentException("El folio debe ser un entero positivo.");
+        }
         try (var c=abrir();var s=consulta(c,"SELECT v.fecha,d.* FROM venta v JOIN detalle d USING(folio) WHERE folio=? ORDER BY clave",folio);
                 var r=s.executeQuery()) {
             if (!r.next()) throw new IllegalArgumentException("No existe ese folio.");
